@@ -823,22 +823,24 @@
 
       <pre id="train-output" class="form-box"></pre>
 
-      h3 class="section-title"><i class="fas fa-chart-pie"></i> India Dataset</h3>
+      <h3 class="section-title"><i class="fas fa-chart-pie"></i> India Dataset Charts</h3>
       <div class="charts-grid">
         <div class="chart-container">
-          <canvas id="indiaChart" width="350" height="350"></canvas>
-          <p class="text-center" style="margin-top:0.8rem; font-weight:500;">India – Present Distribution (65% No Diabetes, 35% Diabetes)</p>
+          
+          <img id="india-present-pie" width="50%" alt="India Present Data Distribution Chart" />
+          <p class="text-center">Present Data Distribution</p>
         </div>
+        </div>
+
+      <h3 class="section-title"><i class="fas fa-globe"></i> Global Dataset Charts</h3>
+      <div class="charts-grid">
+        <div class="chart-container">
+        
+          <img id="global-present-pie" width="50%" alt="Global Present Data Distribution Chart" />
+          <p class="text-center">Present Data Distribution</p>
+        </div>        
       </div>
 
-      <h3 class="section-title"><i class="fas fa-globe"></i> Global Dataset</h3>
-      <div class="charts-grid">
-        <div class="chart-container">
-          <canvas id="globalChart" width="350" height="350"></canvas>
-          <p class="text-center" style="margin-top:0.8rem; font-weight:500;">Global – Present Distribution (72% No Diabetes, 28% Diabetes)</p>
-        </div>
-      </div>
-      
       <div class="chart-container">
         <canvas id="train-chart" width="400" height="200"></canvas>
         <p class="text-center">Model Accuracy Comparison</p>
@@ -1010,67 +1012,6 @@
       document.getElementById('authContainer').style.display = 'block';
     }
 
-// India chart (65% no diabetes, 35% diabetes)
-      const indiaCtx = document.getElementById('indiaChart')?.getContext('2d');
-      if (indiaCtx) {
-        new Chart(indiaCtx, {
-          type: 'pie',
-          data: {
-            labels: ['No Diabetes', 'Diabetes'],
-            datasets: [{
-              data: [65, 35],
-              backgroundColor: ['#22c55e', '#ef4444'],
-              borderWidth: 2,
-              borderColor: 'white'
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-              legend: { 
-                display: true,
-                position: 'bottom',
-                labels: { font: { size: 13 } }
-              },
-              tooltip: { backgroundColor: '#0f172a' }
-            },
-            layout: { padding: 8 }
-          }
-        });
-      }
-
-      // Global chart (72% no diabetes, 28% diabetes)
-      const globalCtx = document.getElementById('globalChart')?.getContext('2d');
-      if (globalCtx) {
-        new Chart(globalCtx, {
-          type: 'pie',
-          data: {
-            labels: ['No Diabetes', 'Diabetes'],
-            datasets: [{
-              data: [72, 28],
-              backgroundColor: ['#22c55e', '#ef4444'],
-              borderWidth: 2,
-              borderColor: 'white'
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-              legend: { 
-                display: true,
-                position: 'bottom',
-                labels: { font: { size: 13 } }
-              },
-              tooltip: { backgroundColor: '#0f172a' }
-            },
-            layout: { padding: 8 }
-          }
-        });
-      }
-    
-
 
 
      // Train handler
@@ -1093,7 +1034,6 @@
       });
 
       if(result.accuracy){
-const mockAccuracy = { 'Random Forest': 0.87, 'Logistic Regression': 0.79, 'Decision Tree': 0.82, 'SVM': 0.85 };
         const ctx=document.getElementById("train-chart").getContext("2d");
         if(window.trainChart) window.trainChart.destroy();
         window.trainChart=new Chart(ctx,{
