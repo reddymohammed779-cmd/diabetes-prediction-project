@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Diabetes Prediction Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+  :root {
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --secondary: #10b981;
+    --accent: #8b5cf6;
+    --pink: #ec4899;
+    --orange: #f97316;
+    --light: #f8fafc;
+    --dark: #1e293b;
+    --gradient: linear-gradient(135deg, var(--primary), var(--accent));
+    --card-bg: #ffffff;
+    --text-color: #333333;
+    --border-color: #e2e8f0;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  body {
+    color: var(--text-color);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-color: white;
+    transition: all 0.3s ease;
+  }
+
+  body.dark-mode {
+    --card-bg: #1e293b;
+    --text-color: #f8fafc;
+    --border-color: #334155;
+    --light: #0f172a;
+    background-color: #0f172a;
+  }
+
+  /* Header Styles */
+  header {
+    background: var(--card-bg);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+  }
+  
+  .logo {
+    font-weight: 700;
+    text-align: center;
+    font-size: 1.8rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  /* Theme toggle */
+  .theme-toggle {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+  
+  .theme-toggle:hover {
+    background: var(--border-color);
+  }
+  
+  /* Homepage Styles */
+  .hero {
+    text-align: center;
+    padding: 4rem 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .hero h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #4ade80, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 800;
+  }
+  
+  .hero p {
+    font-size: 1.4rem;
+    color: #64748b;
+    max-width: 800px;
+    margin: 0 auto 3rem;
+  }
+  
+  .options-grid {
+    display: none;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2.5rem;
+    margin: 4rem 0;
+  }
+  
+  .option-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transition: all 0.4s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    border: 1px solid var(--border-color);
+  }
+  
+  .option-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+  }
+  
+  .option-icon {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    font-size: 2.5rem;
+    background: rgba(99, 102, 241, 0.1);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+  }
+  
+  .train-icon {
+    color: var(--secondary);
+  }
+  
+  .predict-icon {
+    color: var(--primary);
+  }
+  
+  .option-card h3 {
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--dark);
+  }
+  
+  .option-card p {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+  }
+  
+  /* Login Form on Homepage */
+  .auth-container {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 2.5rem;
+    max-width: 450px;
+    margin: 2rem auto;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    border: 1px solid var(--border-color);
+  }
+  
+  .auth-tabs {
+    display: flex;
+    margin-bottom: 1.5rem;
+    background: #f1f5f9;
+    border-radius: 12px;
+    padding: 5px;
+  }
+  
+  .dark-mode .auth-tabs {
+    background: #334155;
+  }
+  
+  .auth-tab {
+    flex: 1;
+    text-align: center;
+    padding: 0.8rem;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    color: var(--text-color);
+  }
+  
+  .auth-tab.active {
+    background: var(--primary);
+    color: white;
+  }
+  
+  .auth-form {
+    display: none;
+  }
+  
+  .auth-form.active {
+    display: block;
+  }
+  
+  .auth-container input {
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--card-bg);
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+  
+  .auth-container input::placeholder {
+    color: #94a3b8;
+  }
+  
+  .auth-container input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  }
+  
+  /* Photo Scroller */
+  .photo-scroller {
+    margin: 4rem 0;
+    padding: 1.5rem 0;
+    background: #f8fafc;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .dark-mode .photo-scroller {
+    background: #1e293b;
+  }
+  
+  .scroller-inner {
+    display: flex;
+    gap: 1.5rem;
+    animation: scroll 30s linear infinite;
+  }
+  
+  .scroller-item {
+    flex: 0 0 auto;
+    width: 280px;
+    height: 180px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  }
+  
+  .scroller-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+  
+  .scroller-item:hover img {
+    transform: scale(1.1);
+  }
+  
+  @keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-280px * 6 - 1.5rem * 6)); }
+  }
+  
+  /* Form Styles */
+  .form-box {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+  }
+  
+  .form-box:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+  }
+  
+  input, select, textarea {
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    padding: 0.8rem;
+    transition: all 0.3s ease;
+    background: var(--card-bg);
+    color: var(--text-color);
+    width: 100%;
+  }
+  
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  }
+  
+  label {
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+    display: block;
+    font-weight: 500;
+  }
+  
+  .dark-mode label {
+    color: #e2e8f0;
+  }
+  
+  button, .btn {
+    border-radius: 12px;
+    padding: 1rem 1.8rem;
+    background: var(--gradient);
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 6px 15px rgba(59,130,246,0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+  }
+  
+  button:hover, .btn:hover {
+    background: linear-gradient(135deg, var(--primary-dark), #7c3aed);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(37,99,235,0.4);
+  }
+  
+  button.secondary {
+    background: #f1f5f9;
+    color: var(--text-color);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+  
+  button.secondary:hover {
+    background: #e2e8f0;
+    transform: translateY(-2px);
+  }
+  
+  /* Loading spinner */
+  .spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+    display: inline-block;
+    margin-right: 8px;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  /* Chart Styles */
+  .chart-container {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease;
+    margin: 1rem 0;
+    border: 1px solid var(--border-color);
+  }
+  
+  .chart-container:hover {
+    transform: scale(1.02);
+  }
+  
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 2.5rem;
+    margin-top: 4rem;
+    color: #64748b;
+    font-size: 0.9rem;
+    background: #f8fafc;
+    border-top: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+  }
+  
+  .dark-mode footer {
+    background: #1e293b;
+    color: #94a3b8;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero h1 {
+      font-size: 2.5rem;
+    }
+    
+    .options-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .form-box {
+      padding: 1.8rem;
+    }
+    
+    .grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .auth-container {
+      padding: 1.8rem;
+    }
+    
+    .scroller-item {
+      width: 220px;
+      height: 150px;
+    }
+  }
+  
+  /* Utility Classes */
+  .text-center {
+    text-align: center;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.5s ease-in;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .section-title {
+    font-size: 2.2rem;
+    margin-bottom: 2rem;
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  
+  .dark-mode .section-title {
+    color: #e2e8f0;
+  }
+  
+  .back-button {
+    background: #f1f5f9;
+    color: var(--text-color);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+  }
+  
+  .back-button:hover {
+    background: #e2e8f0;
+    transform: translateY(-2px);
+  }
+  
+  pre {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    overflow-x: auto;
+    color: #64748b;
+    font-size: 0.9rem;
+    border: 1px solid var(--border-color);
+  }
+  
+  .dark-mode pre {
+    background: #1e293b;
+    color: #94a3b8;
+    border-color: #334155;
+  }
+  
+  /* Navigation for logged in users */
+  .nav-options {
+    display: none;
+  }
+  
+  .nav-options.logged-in {
+    display: flex;
+  }
+  
+  .welcome-message {
+    text-align: center;
+    margin: 2rem 0;
+    font-size: 1.2rem;
+    color: #64748b;
+  }
+  
+  .dark-mode .welcome-message {
+    color: #94a3b8;
+  }
+  
+  .prediction-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  .prediction-form .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .prediction-result {
+    background: #f0f9ff;
+    border-left: 4px solid var(--primary);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-top: 2rem;
+    animation: fadeIn 0.5s ease-in;
+  }
+  
+  .dark-mode .prediction-result {
+    background: rgba(56, 189, 248, 0.1);
+  }
+  
+  .result-positive {
+    background: #fef2f2;
+    border-left: 4px solid #ef4444;
+  }
+  
+  .dark-mode .result-positive {
+    background: rgba(239, 68, 68, 0.1);
+  }
+  
+  .result-negative {
+    background: #f0fdf4;
+    border-left: 4px solid #22c55e;
+  }
+  
+  .dark-mode .result-negative {
+    background: rgba(34, 197, 94, 0.1);
+  }
+  
+  /* Toast notifications */
+  .toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .toast {
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+  }
+  
+  .toast-success {
+    background: var(--success);
+  }
+  
+  .toast-error {
+    background: var(--danger);
+  }
+  
+  .toast-warning {
+    background: var(--warning);
+  }
+  
+  @keyframes toastIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  
+  @keyframes toastOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+  }
+  
+  /* Form validation */
+  .input-error {
+    border-color: var(--danger) !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+  }
+  
+  .error-message {
+    color: var(--danger);
+    font-size: 0.85rem;
+    margin-top: -0.5rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+  
+  /* File upload styling */
+  .file-upload-container {
+    position: relative;
+    margin-bottom: 1.2rem;
+  }
+  
+  .file-upload-label {
+    display: block;
+    padding: 1.5rem;
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .file-upload-label:hover {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.05);
+  }
+  
+  .file-upload-label i {
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+  }
+  
+  .file-upload-label span {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+  
+  .file-upload-label p {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+  
+  .file-upload-input {
+    position: absolute;
+    left: -9999px;
+  }
+  
+  .file-name {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--primary);
+    text-align: center;
+  }
+  </style>
+</head>
+<body>
+  <header class="container">
+    <nav>
+      <ul>
+        <li class="logo"><i class="fas fa-heartbeat"></i> DiabetesPredict</li>
+      </ul>
+      <ul class="nav-options" id="navOptions">
+        <li><button class="btn" onclick="showSection('homepage')"><i class="fas fa-home"></i> Home</button></li>
+        <li><button class="btn" onclick="showSection('train')"><i class="fas fa-cogs"></i> Train</button></li>
+        <li><button class="btn" onclick="showSection('predict')"><i class="fas fa-chart-line"></i> Predict</button></li>
+        <li><button class="btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- Toast notifications container -->
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <!-- Homepage Section -->
+    <section id="homepage">
+      <div class="hero">
+        <h1>Diabetes Prediction Analysis</h1>
+        <p>Compare diabetes prediction models between India and global populations with our advanced machine learning platform</p>
+        
+        <!-- Photo Scroller -->
+        <div class="photo-scroller">
+          <div class="scroller-inner">
+            <div class="scroller-item">
+              <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Medical Research">
+            </div>
+            <div class="scroller-item">
+              <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Data Analysis">
+            </div>
+            <div class="scroller-item">
+              <img src="https://images.unsplash.com/photo-1532938911079-9d3e1c41e6a6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Healthcare">
+            </div>
+            <div class="scroller-item">
+              <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Medical Technology">
+            </div>
+            <div class="scroller-item">
+              <img src="https://images.unsplash.com/photo-1582719471384-8946bb3d3c4f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Doctor Consultation">
+            </div>
+            <div class="scroller-item">
+              <img src="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwa90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Health Monitoring">
+            </div>
+          </div>
+        </div>
+        
+        <div class="options-grid" id="optionsGrid">
+          <div class="option-card" onclick="showSection('train')">
+            <div class="option-icon train-icon">
+              <i class="fas fa-cogs"></i>
+            </div>
+            <h3>Train Models</h3>
+            <p>Upload datasets and train machine learning models for diabetes prediction</p>
+            <button class="btn">Start Training</button>
+          </div>
+          
+          <div class="option-card" onclick="showSection('predict')">
+            <div class="option-icon predict-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h3>Predict Diabetes</h3>
+            <p>Use trained models to predict diabetes risk based on patient data</p>
+            <button class="btn">Make Prediction</button>
+          </div>
+        </div>
+        
+        <!-- Login/Signup Form -->
+        <div class="auth-container" id="authContainer">
+          <div class="auth-tabs">
+            <div class="auth-tab active" onclick="switchAuthTab('login')">Login</div>
+            <div class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</div>
+          </div>
+          
+          <form id="loginForm" class="auth-form active">
+            <input type="text" placeholder="Username" id="username" aria-label="Username" required>
+            <input type="password" placeholder="Password" id="password" aria-label="Password" required>
+            <button type="button" onclick="login()" style="width:100%;" id="loginButton">
+              <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+            <div id="loginMessage" style="margin-top:1rem; text-align:center;"></div>
+          </form>
+          
+          <form id="signupForm" class="auth-form">
+            <input type="text" placeholder="Full Name" aria-label="Full Name" required>
+            <input type="email" placeholder="Email Address" aria-label="Email Address" required>
+            <input type="text" placeholder="Username" aria-label="Username" required>
+            <input type="password" placeholder="Password" aria-label="Password" required>
+            <input type="password" placeholder="Confirm Password" aria-label="Confirm Password" required>
+            <button type="button" style="width:100%;" onclick="signup()">
+              <i class="fas fa-user-plus"></i> Create Account
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Train Section -->
+    <section id="trainSection" class="hidden">
+      <button class="back-button" onclick="showSection('homepage')">
+        <i class="fas fa-arrow-left"></i> Back to Home
+      </button>
+      
+      <h2 class="section-title"><i class="fas fa-cogs"></i> Train Prediction Models</h2>
+      
+      <div class="welcome-message" id="trainWelcome">
+        Welcome, Admin! Ready to train your models?
+      </div>
+      
+      <div class="form-box">
+        <form id="train-form">
+          <div class="grid">
+            <div class="file-upload-container">
+              <label class="file-upload-label" for="india_present_csv">
+                <i class="fas fa-file-csv"></i>
+                <span>India Present CSV</span>
+                <p>Click to upload or drag and drop</p>
+                <p class="file-name" id="indiaPresentFileName"></p>
+              </label>
+              <input type="file" id="india_present_csv" accept=".csv" class="file-upload-input" required>
+            </div>
+            
+                        
+            <div class="file-upload-container">
+              <label class="file-upload-label" for="global_present_csv">
+                <i class="fas fa-file-csv"></i>
+                <span>Global Present CSV</span>
+                <p>Click to upload or drag and drop</p>
+                <p class="file-name" id="globalPresentFileName"></p>
+              </label>
+              <input type="file" id="global_present_csv" accept=".csv" class="file-upload-input" required>
+            </div>
+            </div>
+          <button type="submit" id="trainButton"><i class="fas fa-rocket"></i> Train Models</button>
+        </form>
+      </div>
+
+      <pre id="train-output" class="form-box"></pre>
+
+      h3 class="section-title"><i class="fas fa-chart-pie"></i> India Dataset</h3>
+      <div class="charts-grid">
+        <div class="chart-container">
+          <canvas id="indiaChart" width="350" height="350"></canvas>
+          <p class="text-center" style="margin-top:0.8rem; font-weight:500;">India – Present Distribution (65% No Diabetes, 35% Diabetes)</p>
+        </div>
+      </div>
+
+      <h3 class="section-title"><i class="fas fa-globe"></i> Global Dataset</h3>
+      <div class="charts-grid">
+        <div class="chart-container">
+          <canvas id="globalChart" width="350" height="350"></canvas>
+          <p class="text-center" style="margin-top:0.8rem; font-weight:500;">Global – Present Distribution (72% No Diabetes, 28% Diabetes)</p>
+        </div>
+      </div>
+      
+      <div class="chart-container">
+        <canvas id="train-chart" width="400" height="200"></canvas>
+        <p class="text-center">Model Accuracy Comparison</p>
+      </div>
+    </section>
+
+    <!-- Predict Section -->
+    <section id="predictSection" class="hidden">
+      <button class="back-button" onclick="showSection('homepage')">
+        <i class="fas fa-arrow-left"></i> Back to Home
+      </button>
+      
+      <h2 class="section-title"><i class="fas fa-chart-line"></i> Predict Diabetes Risk</h2>
+      
+      <div class="welcome-message" id="predictWelcome">
+        Welcome, Admin! Ready to make predictions?
+      </div>
+      
+      <div class="form-box">
+        <form id="predict-form">
+          <div class="grid">
+            <label>Region
+              <select id="region" aria-label="Region">
+                <option value="india">India</option>
+                <option value="global">Global</option>
+              </select>
+            
+            <label>Algorithm
+              <select id="algorithm" aria-label="Algorithm">
+                <option value="Random Forest">Random Forest</option>
+                <option value="Logistic Regression">Logistic Regression</option>
+                <option value="Decision Tree">Decision Tree</option>
+                <option value="SVM" selected>SVM</option>
+              </select>
+            </label>
+          </div>
+
+          <h4 style="margin-top:1.5rem;"><i class="fas fa-user"></i> Patient Details</h4>
+          <div class="prediction-form">
+            <div class="form-group">
+              <label>Age <input type="number" id="Age" required></label>
+            </div>
+            <div class="form-group"> 
+              <label>BMI <input type="number" id="Bmi" step="0.1" required></label>
+            </div>
+            <div class="form-group">
+              <label>Glucose <input type="number" id="Glucose" step="0.1" required></label>
+            </div>
+            <div class="form-group">
+              <label>bloodpressure  <input type="number" id="bloodpressure" step="0.1"" required></label>
+            </div>
+            <div class="form-group">
+              <label>Physical Activity (0/1) <input type="number" id="Physical Activity" min="0" max="1" required></label>
+            </div>
+            <div class="form-group">
+              <label>Insulin   <input type="number" id="Insulin" step="0.1"" required></label>
+            </div>
+            <div class="form-group">
+              <label>Gender (0=female,1=male) <input type="number" id="Gender" min="0" max="1" required></label>
+            </div>
+            <div class="form-group">
+            <label>Family History (0/1)<input type="number" id="Family History" min="0" max="1" required></label>
+            </div>
+
+          </div>
+
+          <button type="submit" style="margin-top: 1.5rem;"><i class="fas fa-magic"></i> Predict</button>
+        </form>
+      </div>
+
+      <div id="prediction-result" class="prediction-result hidden">
+        <h3><i class="fas fa-stethoscope"></i> Prediction Result</h3>
+        <p id="result-text">The algorithm predicts that this patient <span id="diabetes-status">does not have</span> diabetes.</p>
+        <p>Confidence: <span id="confidence-level">85%</span></p>
+      </div>
+      
+      <div class="chart-container">
+        <canvas id="predict-chart" width="400" height="200"></canvas>
+        <p class="text-center">Prediction Probability</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Diabetes Prediction Analysis Tool | India vs Global Comparison</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    const USERNAME = "admin";
+    const PASSWORD = "12345";
+    let isLoggedIn = false;
+    
+    // Check if user is logged in on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const loggedInStatus = localStorage.getItem('isLoggedIn');
+      if (loggedInStatus === 'true') {
+        isLoggedIn = true;
+        updateUIForLoggedIn();
+      }
+    });
+    
+    // Show/hide sections
+    function showSection(sectionName) {
+      if (!isLoggedIn && (sectionName === 'train' || sectionName === 'predict')) {
+        showSection('homepage');
+        alert('Please login first to access this feature');
+        return;
+      }
+      
+      document.querySelectorAll('section').forEach(section => {
+        section.classList.add('hidden');
+      });
+      
+      if (sectionName === 'homepage') {
+        document.getElementById('homepage').classList.remove('hidden');
+      } else if (sectionName === 'train') {
+        document.getElementById('trainSection').classList.remove('hidden');
+      } else if (sectionName === 'predict') {
+        document.getElementById('predictSection').classList.remove('hidden');
+      }
+    }
+    
+    // Switch between login and signup tabs
+    function switchAuthTab(tab) {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+      
+      document.querySelector(`.auth-tab:nth-child(${tab === 'login' ? 1 : 2})`).classList.add('active');
+      document.getElementById(tab === 'login' ? 'loginForm' : 'signupForm').classList.add('active');
+    }
+    
+    function login() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const message = document.getElementById('loginMessage');
+
+      if(username === USERNAME && password === PASSWORD){
+        isLoggedIn = true;
+        localStorage.setItem('isLoggedIn', 'true');
+        updateUIForLoggedIn();
+        message.style.color = '#10b981';
+        message.innerText = "Login successful! Redirecting...";
+        setTimeout(() => {
+          showSection('homepage');
+        }, 1000);
+      } else {
+        message.style.color = '#ef4444';
+        message.innerText = "Invalid username or password.";
+      }
+    }
+    
+    function logout() {
+      isLoggedIn = false;
+      localStorage.removeItem('isLoggedIn');
+      updateUIForLoggedOut();
+      showSection('homepage');
+    }
+    
+    function updateUIForLoggedIn() {
+      document.getElementById('navOptions').classList.add('logged-in');
+      document.getElementById('optionsGrid').style.display = 'grid';
+      document.getElementById('authContainer').style.display = 'none';
+    }
+    
+    function updateUIForLoggedOut() {
+      document.getElementById('navOptions').classList.remove('logged-in');
+      document.getElementById('optionsGrid').style.display = 'none';
+      document.getElementById('authContainer').style.display = 'block';
+    }
+
+// India chart (65% no diabetes, 35% diabetes)
+      const indiaCtx = document.getElementById('indiaChart')?.getContext('2d');
+      if (indiaCtx) {
+        new Chart(indiaCtx, {
+          type: 'pie',
+          data: {
+            labels: ['No Diabetes', 'Diabetes'],
+            datasets: [{
+              data: [65, 35],
+              backgroundColor: ['#22c55e', '#ef4444'],
+              borderWidth: 2,
+              borderColor: 'white'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: { 
+                display: true,
+                position: 'bottom',
+                labels: { font: { size: 13 } }
+              },
+              tooltip: { backgroundColor: '#0f172a' }
+            },
+            layout: { padding: 8 }
+          }
+        });
+      }
+
+      // Global chart (72% no diabetes, 28% diabetes)
+      const globalCtx = document.getElementById('globalChart')?.getContext('2d');
+      if (globalCtx) {
+        new Chart(globalCtx, {
+          type: 'pie',
+          data: {
+            labels: ['No Diabetes', 'Diabetes'],
+            datasets: [{
+              data: [72, 28],
+              backgroundColor: ['#22c55e', '#ef4444'],
+              borderWidth: 2,
+              borderColor: 'white'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: { 
+                display: true,
+                position: 'bottom',
+                labels: { font: { size: 13 } }
+              },
+              tooltip: { backgroundColor: '#0f172a' }
+            },
+            layout: { padding: 8 }
+          }
+        });
+      }
+    
+
+
+
+     // Train handler
+    document.getElementById("train-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData();
+      formData.append("india_present_csv", document.getElementById("india_present_csv").files[0]);
+      formData.append("global_present_csv", document.getElementById("global_present_csv").files[0]);
+      
+      const res = await fetch("http://127.0.0.1:8000/train", { method:"POST", body: formData });
+      const result = await res.json();
+      document.getElementById("train-output").textContent = JSON.stringify(result,null,2);
+
+      ["india","global"].forEach(region=>{
+        ["present","future"].forEach(time=>{
+          if(result.charts?.[region]?.[time]){
+            document.getElementById(`${region}-${time}-pie`).src="data:image/png;base64,"+result.charts[region][time].pie_chart;
+                     }
+        });
+      });
+
+      if(result.accuracy){
+const mockAccuracy = { 'Random Forest': 0.87, 'Logistic Regression': 0.79, 'Decision Tree': 0.82, 'SVM': 0.85 };
+        const ctx=document.getElementById("train-chart").getContext("2d");
+        if(window.trainChart) window.trainChart.destroy();
+        window.trainChart=new Chart(ctx,{
+          type:"bar",
+          data:{
+            labels:Object.keys(result.accuracy),
+            datasets:[{label:"Model Accuracy", data:Object.values(result.accuracy), backgroundColor:"rgba(54,162,235,0.6)"}]
+          },
+          options:{scales:{y:{beginAtZero:true,max:1}}}
+        });
+      }
+    });
+
+    
+
+   // Predict handler – fixed
+document.getElementById("predict-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  // Collect form values – IDs must match your HTML exactly
+  const data = {
+    region: document.getElementById("region").value,
+    algorithm: document.getElementById("algorithm").value,
+    features: [
+      +document.getElementById("Age").value,
+      +document.getElementById("Bmi").value,
+      +document.getElementById("Glucose").value,
+      +document.getElementById("bloodpressure").value,
+      +document.getElementById("Physical Activity").value,
+      +document.getElementById("Insulin").value,
+      +document.getElementById("Gender").value,
+      +document.getElementById("Family History").value
+    ]
+  };
+
+  // Hide previous result (if any)
+  document.getElementById("prediction-result").classList.add("hidden");
+
+  // Simulate API call (replace with real fetch when backend is ready)
+  setTimeout(() => {
+    // Mock prediction – replace this with your real model call
+    const hasDiabetes = Math.random() > 0.5;
+    const confidence = Math.random() * 0.3 + 0.7; // 70–100%
+
+    const mockResult = {
+      prediction: hasDiabetes ? 1 : 0,
+      probability: {
+        "No Diabetes": hasDiabetes ? 1 - confidence : confidence,
+        "Diabetes": hasDiabetes ? confidence : 1 - confidence
+      },
+      confidence: confidence
+    };
+
+    // --- Display result text ---
+    const resultElement = document.getElementById("prediction-result");
+    const statusElement = document.getElementById("diabetes-status");
+    const confidenceElement = document.getElementById("confidence-level");
+
+    if (mockResult.prediction === 1) {
+      statusElement.innerText = "has";
+      resultElement.classList.add("result-positive");
+      resultElement.classList.remove("result-negative");
+    } else {
+      statusElement.innerText = "does not have";
+      resultElement.classList.add("result-negative");
+      resultElement.classList.remove("result-positive");
+    }
+
+    confidenceElement.innerText = (mockResult.confidence * 100).toFixed(1) + "%";
+    resultElement.classList.remove("hidden");
+
+    // --- Update prediction probability chart ---
+    const ctx = document.getElementById("predict-chart").getContext("2d");
+    if (window.predictChart) window.predictChart.destroy();
+    window.predictChart = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["No Diabetes", "Diabetes"],
+        datasets: [{
+          label: "Prediction Probability",
+          data: [
+            mockResult.probability["No Diabetes"] * 100,
+            mockResult.probability["Diabetes"] * 100
+          ],
+          backgroundColor: ["rgba(16, 185, 129, 0.6)", "rgba(239, 68, 68, 0.6)"]
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            ticks: { callback: (value) => value + '%' }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (context) => context.raw.toFixed(2) + '%'
+            }
+          }
+        }
+      }
+    });
+  }, 1500); // simulate network delay
+});
+  </script>
+</body>
+</html>

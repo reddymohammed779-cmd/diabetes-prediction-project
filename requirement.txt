@@ -1,0 +1,9 @@
+pip install fastapi uvicorn scikit-learn pandas numpy joblib python-multipart
+
+pip install xgboost
+pip install uvicorn
+uvicorn app:app --reload
+pip install fastapi uvicorn
+python -m uvicorn app:app --reload
+
+
