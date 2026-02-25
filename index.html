@@ -887,30 +887,32 @@
           <h4 style="margin-top:1.5rem;"><i class="fas fa-user"></i> Patient Details</h4>
           <div class="prediction-form">
             <div class="form-group">
-              <label>Age <input type="number" id="Age" required></label>
-            </div>
-            <div class="form-group"> 
-              <label>BMI <input type="number" id="Bmi" step="0.1" required></label>
+              <label>Pregnancies <input type="number" id="Pregnancies" required></label>
             </div>
             <div class="form-group">
               <label>Glucose <input type="number" id="Glucose" step="0.1" required></label>
             </div>
-            <div class="form-group">
+             <div class="form-group">
               <label>Blood Pressure <input type="number" id="bloodpressure" step="0.1" required></label>
             </div>
             <div class="form-group">
-              <label>Physical Activity (0/1) <input type="number" id="Physical Activity" min="0" max="1" required></label>
+             <div class="form-group">
+           <label>Skin Thickness <input type="number" id="skinThickness" required></label>
+            </div>
             </div>
             <div class="form-group">
               <label>Insulin <input type="number" id="Insulin" step="0.1" required></label>
             </div>
-            <div class="form-group">
-              <label>Gender (0=female,1=male) <input type="number" id="Gender" min="0" max="1" required></label>
+            <div class="form-group"> 
+              <label>BMI <input type="number" id="Bmi" step="0.1" required></label>
+            </div>
+           <div class="form-group">
+              <label>DPF <input type="number" id="DPF" step="0.01" required></label>
             </div>
             <div class="form-group">
-            <label>Family History (0/1)<input type="number" id="Family History" min="0" max="1" required></label>
+              <label>Age <input type="number" id="Age" required></label>
             </div>
-
+        
           </div>
 
           <button type="submit" style="margin-top: 1.5rem;"><i class="fas fa-magic"></i> Predict</button>
@@ -1123,14 +1125,15 @@ Global CSV: ${globalCounts.diabetes + globalCounts.nonDiabetes} rows
 
       // Collect input features
       const features = [
-        +document.getElementById("Age").value,
-        +document.getElementById("Bmi").value,
+        +document.getElementById("Pregnancies").value,
         +document.getElementById("Glucose").value,
         +document.getElementById("bloodpressure").value,
-        +document.getElementById("Physical Activity").value,
+        +document.getElementById("skinThickness").value,
         +document.getElementById("Insulin").value,
-        +document.getElementById("Gender").value,
-        +document.getElementById("Family History").value
+        +document.getElementById("Bmi").value,
+        +document.getElementById("DPF").value,
+        +document.getElementById("Age").value
+        
       ];
 
       // Define algorithms
